@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Required JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+        }
+
+        /* Login Page */
+        #login-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #343a40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #007bff;
+            text-align: center;
+        }
+
+        .login-box button {
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .container-fluid {
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding: 20px;
+            color: white;
+        }
+
+        .sidebar button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .actbutton{
+            background: white !important;
+            color: black !important;
+            border: 1px solid #007bff !important;
+        }
+
+        .sidebar button:hover {
+            background-color: #0056b3;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+            background-color: #f8f9fa;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        th {
+            text-align: center;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .btn-upload {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-upload:hover {
+            background-color: #218838;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #preview, #preview-outside, #preview-inside {
+            margin: 20px auto;
+            max-width: 300px;
+            display: none;
+        }
+
+        .spinner {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .nav-tabs .nav-link {
+            color: #495057;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            padding: 20px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .dual-upload {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .dual-upload .upload-col {
+            width: 48%;
+            text-align: center;
+        }
+        
+        .dual-upload img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="login-page">
+    <div class="login-box">
+        <h2>Login</h2>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="userid" placeholder="Username">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="password" placeholder="Password">
+        </div>
+        <button class="btn btn-primary" onclick="login()">Login</button>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="header">Breast Cancer Prediction System</div>
+<div class="container-fluid" style="padding: 0px !important;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button id="dev" class="actbutton">Model Development</button>
+        <button id="dep">Model Deployment</button>
+    </div>
+
+    <!-- Model Development Section -->
+    <div class="content active" id="development">
+       
+            <h1>Model Performance Results</h1>
+                <table class="table table-bordered w-100">
+                    <tr>
+                        <th>Model</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>AUC</th>
+                    </tr>
+                    <tr><td>Ensemble</td><td>0.8561</td><td>0.8377</td><td>0.9699</td><td>0.8025</td></tr>
+                    <tr><td>MAFCNN-SCD</td><td>0.8710</td><td>0.8567</td><td>0.9662</td><td>0.8261</td></tr>
+                    <tr><td>Kernel-ELM</td><td>0.6600</td><td>0.6600</td><td>1.0000</td><td>0.5000</td></tr>
+                    <tr><td>MSVM Method</td><td>0.6600</td><td>0.6600</td><td>1.0000</td><td>0.5000</td></tr>
+                    <tr><td>Multi-Scale CNN</td><td>0.7742</td><td>0.7522</td><td>0.9812</td><td>0.6767</td></tr>
+                    <tr><td>MobileNet</td><td>0.8685</td><td>0.8737</td><td>0.9361</td><td>0.8367</td></tr>
+                    <tr><td>DenseNet169</td><td>0.8908</td><td>0.8700</td><td>0.9812</td><td>0.8483</td></tr>
+                    <tr><td>MFFDCNN-CTDC</td><td>0.6600</td><td>0.6600</td><td>1.0000</td><td>0.5000</td></tr>
+                    <tr><td>AMCSCC-WHOEL</td><td>0.8635</td><td>0.8482</td><td>0.9662</td><td>0.8152</td></tr>
+                    <tr><td>SVM</td><td>0.8809</td><td>0.9160</td><td>0.9022</td><td>0.9090</td></tr>
+                    <tr><td>Naïve Bayes</td><td>0.7245</td><td>0.8780</td><td>0.6766</td><td>0.7643</td></tr>
+                    <tr><td>Autoencoder</td><td>0.3523</td><td>0.6190</td><td>0.0488</td><td>0.0905</td></tr>
+                </table>
+
+                <div class="center">
+                    <img src="static/performance.png" alt="Model Performance Graph" width="600">
+                </div>
+
+                <div class="section">
+                    <h2>Discussion of Model Performance</h2>
+                    <p>From the results, we can analyze the performance of various models across different metrics such as <strong>accuracy, precision, recall, F1 score,</strong> and <strong>AUC.</strong></p>
+                </div>
+                
+                <div class="section">
+                    <h2>Best Performing Models</h2>
+                    <p><strong>DenseNet169</strong> achieved the highest accuracy (<strong>0.8908</strong>), recall (<strong>0.9812</strong>), and F1 score (<strong>0.9223</strong>). This indicates that it is highly effective in classifying the images correctly.</p>
+                    <p><strong>BiLSTM</strong> also showed strong performance with an accuracy of <strong>0.9250</strong>, making it a reliable model for classification tasks.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Ensemble Learning Benefits</h2>
+                    <p>The <strong>Ensemble model</strong> (<strong>0.8561 accuracy, 0.8025 AUC</strong>) performed well, demonstrating that combining multiple models can enhance performance by leveraging their strengths.</p>
+                    <p><strong>MAFCNN-SCD</strong> (<strong>0.8710 accuracy, 0.8261 AUC</strong>) also showed a good balance between precision and recall.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Kernel-ELM and MSVM Method Limitations</h2>
+                    <p>Models like <strong>Kernel-ELM</strong> and <strong>MSVM Method</strong> had an accuracy of only <strong>0.6600</strong>, and their AUC was <strong>0.5000</strong>, indicating that they might not be well-suited for the classification task.</p>
+                    <p>These models achieved <strong>perfect recall (1.0000)</strong> but struggled in precision, suggesting they may be overfitting or classifying all cases as positive.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Comparison of CNN-based Models</h2>
+                    <p><strong>Multi-Scale CNN</strong> performed decently with an accuracy of <strong>0.7742</strong> and a recall of <strong>0.9812</strong>, meaning it correctly identified most positive cases but had a lower precision.</p>
+                    <p><strong>MobileNet</strong> (<strong>0.8685 accuracy, 0.9038 F1-score</strong>) was a strong candidate, balancing efficiency and performance well.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>SVM and Naïve Bayes Performance</h2>
+                    <p><strong>SVM</strong> (<strong>0.8809 accuracy, 0.9160 precision</strong>) performed better than <strong>Naïve Bayes</strong>, showing that SVMs can effectively separate the classes when trained on extracted features.</p>
+                    <p><strong>Naïve Bayes</strong> (<strong>0.7245 accuracy, 0.7643 F1-score</strong>) struggled more, likely due to its assumption of feature independence, which doesn't hold well for image data.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Autoencoder Weak Performance</h2>
+                    <p>The <strong>Autoencoder model</strong> (<strong>0.3523 accuracy, 0.6190 precision, 0.0488 recall</strong>) performed the worst, indicating it may not be suitable for direct classification but could still be useful for feature extraction or anomaly detection.</p>
+                </div>
+    
+    </div>
+
+    <!-- Model Deployment Section -->
+    <div class="content" id="deployment">
+        <h2>Model Deployment</h2>
+        
+        <ul class="nav nav-tabs" id="deploymentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="traditional-tab" data-bs-toggle="tab" data-bs-target="#traditional" type="button" role="tab">Traditional Models</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fusion-tab" data-bs-toggle="tab" data-bs-target="#fusion" type="button" role="tab">Fusion Model</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="deploymentTabContent">
+            <!-- Traditional Models Tab -->
+            <div class="tab-pane fade show active" id="traditional" role="tabpanel">
+                <div class="upload-section">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input type="file" id="imageInput" class="form-control" accept="image/*">
+                            <p class="text-success spinner" id="traditional-spinner" style="display: none;">Prediction in progress....</p>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-upload" onclick="uploadTraditionalImage()">Predict</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <img id="preview" src="" alt="Uploaded Image" class="img-thumbnail">
+                </div>
+                
+                <h2 class="mt-4">Predictions</h2>
+                <div class="table-container" id="traditional-results-container" style="display: none;">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Model Name</th>
+                                <th>Probability</th>
+                                <th>Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody id="traditional-results"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Fusion Model Tab -->
+            <div class="tab-pane fade" id="fusion" role="tabpanel">
+                <div class="upload-section">
+                    <h4>Upload both breast images for fusion prediction</h4>
+                    
+                    <div class="dual-upload">
+                        <div class="upload-col">
+                            <h5>Breast Outside Image</h5>
+                            <input type="file" id="outsideImage" class="form-control mb-2" accept="image/*">
+                            <img id="preview-outside" src="" alt="Outside Image" class="img-thumbnail">
+                        </div>
+                        
+                        <div class="upload-col">
+                            <h5>Breast Inside Image</h5>
+                            <input type="file" id="insideImage" class="form-control mb-2" accept="image/*">
+                            <img id="preview-inside" src="" alt="Inside Image" class="img-thumbnail">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-success spinner" id="fusion-spinner" style="display: none;">Fusion prediction in progress....</p>
+                            <button class="btn btn-upload" onclick="uploadFusionImages()">Predict with Fusion</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 class="mt-4">Fusion Prediction Results</h2>
+                <div class="table-container" id="fusion-results-container" style="display: none;">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>Model Name</th>
+                                <th>Probability</th>
+                                <th>Prediction</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fusion-results"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function login() {
+        if($("#userid").val() == "admin" && $("#password").val() == "password"){
+            document.getElementById('login-page').style.display = 'none';
+            document.querySelector('.content').style.display = 'block';    
+        }else{
+            alert("Invalid userid and password")
+        }
+    }
+
+    function showSection(section) {
+        $(".content").removeClass("active");
+        $("#" + section).addClass("active");
+    }
+
+    $("#dev").click(function(){
+        $("#dev").addClass('actbutton')
+        $("#dep").removeClass('actbutton')
+        $("#development").show()
+        $("#deployment").hide()
+    })
+
+    $("#dep").click(function(){
+        $("#dep").addClass('actbutton')
+        $("#dev").removeClass('actbutton')
+        $("#development").hide()
+        $("#deployment").show()
+    })
+
+    // Preview images when selected
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const preview = document.getElementById('preview');
+            preview.src = URL.createObjectURL(e.target.files[0]);
+            preview.style.display = 'block';
+        }
+    });
+    
+    document.getElementById('outsideImage').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const preview = document.getElementById('preview-outside');
+            preview.src = URL.createObjectURL(e.target.files[0]);
+            preview.style.display = 'block';
+        }
+    });
+    
+    document.getElementById('insideImage').addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            const preview = document.getElementById('preview-inside');
+            preview.src = URL.createObjectURL(e.target.files[0]);
+            preview.style.display = 'block';
+        }
+    });
+
+    function uploadTraditionalImage() {
+        let fileInput = document.getElementById("imageInput").files[0];
+        if (!fileInput) {
+            alert("Please upload an image first.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("file", fileInput);
+        $("#traditional-spinner").show();
+        $.ajax({
+            url: "/predict",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $("#preview").attr("src", response.image_url).show();
+                let tableBody = $("#traditional-results");
+                tableBody.empty();
+
+                $.each(response.predictions, function(modelName, data) {
+                    tableBody.append(`
+                        <tr>
+                            <td>${modelName}</td>
+                            <td>${data.Probability.toFixed(4)}</td>
+                            <td>${data.Prediction}</td>
+                        </tr>
+                    `);
+                });
+                $("#traditional-spinner").hide();
+                $("#traditional-results-container").show();
+            },
+            error: function(error) {
+                alert("Error uploading image. Please try again.");
+                $("#traditional-spinner").hide();
+            }
+        });
+    }
+    
+    function uploadFusionImages() {
+        let outsideFile = document.getElementById("outsideImage").files[0];
+        let insideFile = document.getElementById("insideImage").files[0];
+        
+        if (!outsideFile || !insideFile) {
+            alert("Please upload both outside and inside images for fusion prediction.");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("outside_image", outsideFile);
+        formData.append("inside_image", insideFile);
+        
+        $("#fusion-spinner").show();
+        $.ajax({
+            url: "/predict_fusion",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $("#preview-outside").attr("src", response.outside_image_url).show();
+                $("#preview-inside").attr("src", response.inside_image_url).show();
+                
+                let tableBody = $("#fusion-results");
+                tableBody.empty();
+
+                $.each(response.predictions, function(modelName, data) {
+                    tableBody.append(`
+                        <tr>
+                            <td>${modelName}</td>
+                            <td>${data.Probability.toFixed(4)}</td>
+                            <td>${data.Prediction}</td>
+                        </tr>
+                    `);
+                });
+                $("#fusion-spinner").hide();
+                $("#fusion-results-container").show();
+            },
+            error: function(error) {
+                alert("Error uploading images. Please try again.");
+                $("#fusion-spinner").hide();
+            }
+        });
+    }
+</script>
